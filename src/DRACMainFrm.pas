@@ -21,6 +21,8 @@ type
     ComboBox1: TComboBox;
     ServerLabel: TLabel;
     KeyInputBtn: TBitBtn;
+    ComboBox2: TComboBox;
+    Label1: TLabel;
     procedure BitBtn1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
@@ -30,6 +32,7 @@ type
     procedure RequestUserInformation();
     function ValidateSummonerInput: Boolean;
     procedure MapServerName();
+    procedure UserToJson(const JSonResponse: String);
 
   private
     FAPIKey: String;
@@ -48,7 +51,7 @@ implementation
 {$R *.dfm}
 
 uses
-  System.StrUtils;
+  System.StrUtils, System.JSON;
 
 procedure TForm1.BitBtn1Click(Sender: TObject);
 begin
@@ -71,7 +74,8 @@ end;
 procedure TForm1.FormShow(Sender: TObject);
 begin
   ActivityIndicator1.Visible := false;
-  InputEdit.Font.Color := clWebRed;
+  // todo: make default input grey at first
+  // InputEdit.Font.Color
 end;
 
 procedure TForm1.RequestUserInformation();
@@ -80,7 +84,7 @@ var
   Response: string;
 begin
   if not ValidateSummonerInput then begin
-
+    exit;
   end;
 
   // Replace 'REGION' and 'SUMMONER_NAME' with the desired region and summoner name
@@ -118,6 +122,41 @@ begin
     3:
       FServerName := 'EUW1';
   end;
+end;
+
+// cast the user response to json object for further processing
+procedure TForm1.UserToJSon(const JsonResponse: String);
+var
+  LJsonObject: TJSONObject;
+begin
+  try
+    LJsonObject := TJSONObject.ParseJSONValue(JsonResponse) as TJSONObject;
+
+    if Assigned(LJsonObject) then
+      begin
+        try
+          // Check if the 'puuid' key exists in the JSON object
+          if LJsonObject.TryGetValue<string>('puuid', PUUID) then
+          begin
+          // PUUID is there and can be used now
+          end
+          else
+          begin
+            // Handle the case where 'puuid' key is not present in the JSON
+            // ...
+          end;
+        finally
+          LJsonObject.Free;
+        end;
+      end
+      else
+      begin
+        // Handle the case where JSON parsing failed
+        // ...
+      end;
+    except
+      // Handle exceptions if any
+    end;
 end;
 
 end.

@@ -8263,11 +8263,18 @@ object Form1: TForm1
       Height = 15
       Caption = 'Server:'
     end
+    object Label1: TLabel
+      Left = 322
+      Top = 59
+      Width = 39
+      Height = 15
+      Caption = 'Games:'
+    end
     object Memo1: TMemo
       Left = 32
-      Top = 72
+      Top = 104
       Width = 641
-      Height = 409
+      Height = 377
       Lines.Strings = (
         'Memo1')
       TabOrder = 0
@@ -8295,7 +8302,7 @@ object Form1: TForm1
       Animate = True
     end
     object ComboBox1: TComboBox
-      Left = 361
+      Left = 367
       Top = 27
       Width = 145
       Height = 23
@@ -8324,6 +8331,21 @@ object Form1: TForm1
       Caption = #55357#56593
       TabOrder = 5
       OnClick = KeyInputBtnClick
+    end
+    object ComboBox2: TComboBox
+      Left = 367
+      Top = 56
+      Width = 145
+      Height = 23
+      ItemIndex = 0
+      TabOrder = 6
+      Text = '5'
+      Items.Strings = (
+        '5'
+        '10'
+        '25'
+        '50'
+        '100')
     end
   end
   object IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL
