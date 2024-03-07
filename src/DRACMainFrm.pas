@@ -100,6 +100,7 @@ begin
 
     // Display the response in Memo1 or handle it as needed
     Memo1.Lines.Text := Response;
+    UserToJson(Response);
   except
     on E: Exception do
       ShowMessage('Error: ' + E.Message);
@@ -108,7 +109,7 @@ end;
 
 function TForm1.ValidateSummonerInput(): Boolean;
 begin
-  if (InputEdit.Text <> '') OR NOT (ContainsText(InputEdit.Text, '#')) then
+  if (InputEdit.Text = '') OR NOT (ContainsText(InputEdit.Text, '#')) then
     Result := false
   else
     Result := true;
@@ -128,6 +129,7 @@ end;
 procedure TForm1.UserToJSon(const JsonResponse: String);
 var
   LJsonObject: TJSONObject;
+  RiotApiUrl: String;
 begin
   try
     LJsonObject := TJSONObject.ParseJSONValue(JsonResponse) as TJSONObject;
@@ -138,7 +140,21 @@ begin
           // Check if the 'puuid' key exists in the JSON object
           if LJsonObject.TryGetValue<string>('puuid', PUUID) then
           begin
-          // PUUID is there and can be used now
+            // PUUID is there and can be used now
+            FServerName := 'EUROPE'; // different for this api
+            RiotAPIUrl := Format('https://%s.api.riotgames.com/lol/match/v5/matches/by-puuid/%s/ids', [FServerName, PUUID]);
+
+            // Set up the HTTP request headers (including the API key)
+            IdHTTP1.IOHandler := IdSSLIOHandlerSocketOpenSSL1;
+
+            try
+              // Make the HTTP GET request
+              Memo1.Lines.Add(IdHTTP1.Get(RiotAPIUrl));
+            except
+              on E: Exception do
+                ShowMessage('Error: ' + E.Message);
+            end;
+
           end
           else
           begin
