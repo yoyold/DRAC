@@ -33,6 +33,7 @@ type
     function ValidateSummonerInput: Boolean;
     procedure MapServerName();
     procedure UserToJson(const JSonResponse: String);
+    procedure FindMatchbyID(AMatchID: String);
 
   private
     FAPIKey: String;
@@ -88,6 +89,7 @@ begin
   end;
 
   // Replace 'REGION' and 'SUMMONER_NAME' with the desired region and summoner name
+  FServerName := 'EUW1';
   RiotAPIUrl := Format('https://%s.api.riotgames.com/lol/summoner/v4/summoners/by-name/%s', [FServerName, InputEdit.Text]);
 
   // Set up the HTTP request headers (including the API key)
@@ -130,6 +132,9 @@ procedure TForm1.UserToJSon(const JsonResponse: String);
 var
   LJsonObject: TJSONObject;
   RiotApiUrl: String;
+  LNextResponse: String;
+  LNextJSon: TJSONObject;
+  LMatchID: String;
 begin
   try
     LJsonObject := TJSONObject.ParseJSONValue(JsonResponse) as TJSONObject;
@@ -149,7 +154,12 @@ begin
 
             try
               // Make the HTTP GET request
-              Memo1.Lines.Add(IdHTTP1.Get(RiotAPIUrl));
+             LNextResponse := IdHTTP1.Get(RiotAPIUrl);
+             //  LNextJSon := TJSONObject.ParseJSONValue(LNextResponse) as TJSONObject;
+             Memo1.Lines.Add(LNextResponse);
+              //LMatchID := LJsonObject.TryGetValue<String>('', LMatchID);
+              LMatchID := 'EUW1_6845153197';
+              FindMatchbyID(LMatchID);
             except
               on E: Exception do
                 ShowMessage('Error: ' + E.Message);
@@ -173,6 +183,17 @@ begin
     except
       // Handle exceptions if any
     end;
+end;
+
+procedure TForm1.FindMatchByID(AMatchID: String);
+var
+  RiotApiUrl: String;
+  LNextResponse: String;
+begin
+  FServerName := 'EUROPE';
+  RiotApiUrl := Format('https://%s.api.riotgames.com/lol/match/v5/matches/%s', [FServerName, AMatchID]);
+  LNextResponse := IdHTTP1.Get(RiotApiUrl);
+  Memo1.Lines.Add(LNextResponse);
 end;
 
 end.
